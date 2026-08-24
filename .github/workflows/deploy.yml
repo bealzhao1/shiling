@@ -78,6 +78,14 @@ jobs:
           mkdir -p "$HOME/.kube"
           echo "${{ secrets.KUBE_CONFIG }}" > "$HOME/.kube/config"
           chmod 600 "$HOME/.kube/config"
+          cfg="$HOME/.kube/config"
+          if [ ! -s "$cfg" ]; then
+            echo "Error: ~/.kube/config is empty. Check that the KUBE_CONFIG secret exists and is not base64 encoded."
+            exit 1
+          fi
+          echo "kubeconfig size: $(wc -c < "$cfg") bytes"
+          echo "cluster server(s):"
+          grep -E '^\s+server:' "$cfg" | head -5
 
       - name: Inject API keys as Secret
         run: |
