@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飞花令 · 以诗会友</title>
+<style>
+  /* ============ 主题：默认「暗夜」 ============ */
+  :root {
+    --bg: #0f1117;
+    --bg-soft: #171a23;
+    --panel: #1c2029;
+    --border: #2a2f3a;
+    --text: #e8eaf0;
+    --text-dim: #9aa3b2;
+    --accent: #7c6cff;
+    --accent-soft: rgba(124, 108, 255, 0.16);
+    --user-bubble: #2a5cff;
+    --tool-bg: #232733;
+    --tool-border: #3a3f4d;
+    --danger: #ff6b6b;
+    --radius: 16px;
+  }
+  /* ============ 主题：「素笺」宣纸浅色 ============ */
+  :root[data-theme="light"] {
+    --bg: #f5f0e6;
+    --bg-soft: #faf6ec;
+    --panel: #fffdf7;
+    --border: #e0d8c4;
+    --text: #2b2a26;
+    --text-dim: #8a7f6a;
+    --accent: #a83232;
+    --accent-soft: rgba(168, 50, 50, 0.14);
+    --user-bubble: #a83232;
+    --tool-bg: #ede6d4;
+    --tool-border: #d6cdb6;
+    --danger: #c0392b;
+  }
+  /* ============ 主题：「墨韵」深青墨 ============ */
+  :root[data-theme="ink"] {
+    --bg: #1e2128;
+    --bg-soft: #262a33;
+    --panel: #2c303b;
+    --border: #3a4050;
+    --text: #d8dee9;
+    --text-dim: #8a93a3;
+    --accent: #88c0d0;
+    --accent-soft: rgba(136, 192, 208, 0.16);
+    --user-bubble: #5e81ac;
+    --tool-bg: #2f3441;
+    --tool-border: #434a5c;
+    --danger: #bf616a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+  .app {
+    width: 100%;
+    max-width: 860px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 顶部栏 */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-soft);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .logo { font-weight: 700; font-size: 17px; white-space: nowrap; }
+  .logo .flower { color: var(--accent); }
+  .spacer { flex: 1; }
+  select {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    max-width: 220px;
+  }
+  select:hover { border-color: var(--accent); }
+  .icon-btn {
+    background: var(--panel);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+  .theme-icon { font-size: 15px; line-height: 1; display: inline-block; }
+
+  /* 消息区 */
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+  .welcome {
+    margin: auto;
+    text-align: center;
+    color: var(--text-dim);
+    max-width: 520px;
+  }
+  .welcome h1 { font-size: 28px; color: var(--text); margin-bottom: 12px; }
+  .welcome .hint { font-size: 14px; line-height: 1.8; }
+  .welcome .hint span {
+    display: inline-block;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin: 4px 3px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .welcome .hint span:hover { border-color: var(--accent); color: var(--accent); }
+
+  .row { display: flex; flex-direction: column; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+  .row.user { align-items: flex-end; }
+  .row.assistant { align-items: flex-start; }
+
+  .bubble {
+    max-width: 82%;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    line-height: 1.65;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .row.user .bubble {
+    background: var(--user-bubble);
+    border-bottom-right-radius: 6px;
+    color: #fff;
+  }
+  .row.assistant .bubble {
+    background: var(--panel);
+    border-bottom-left-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .bubble .cursor {
+    display: inline-block;
+    width: 8px; height: 16px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* 工具调用卡片 */
+  .tool-call {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--tool-bg);
+    border: 1px dashed var(--tool-border);
+    border-radius: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    max-width: 82%;
+  }
+  .tool-call .icon { color: var(--accent); font-weight: 700; }
+  .tool-call code {
+    background: rgba(0,0,0,.25);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 12px;
+  }
+
+  .error-msg {
+    background: rgba(255,107,107,.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    max-width: 82%;
+  }
+
+  /* 输入区 */
+  .composer {
+    padding: 16px 20px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+  .composer-inner {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 8px 8px 8px 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    transition: border-color .2s ease, box-shadow .25s ease,
+                background-color .2s ease;
+  }
+  .composer-inner:hover {
+    border-color: var(--accent);
+  }
+  .composer-inner:focus-within {
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 4px var(--accent-soft),
+      0 8px 24px rgba(0, 0, 0, .18);
+  }
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    resize: none;
+    max-height: 180px;
+    line-height: 1.55;
+    padding: 8px 0;
+    letter-spacing: .15px;
+  }
+  textarea::placeholder {
+    color: var(--text-dim);
+    transition: opacity .2s ease;
+  }
+  .composer-inner:focus-within textarea::placeholder { opacity: .5; }
+  .send-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px var(--accent-soft);
+    transition: transform .15s ease, box-shadow .2s ease, filter .15s ease;
+  }
+  .send-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+    box-shadow: 0 6px 20px var(--accent-soft);
+  }
+  .send-btn:active:not(:disabled) {
+    transform: translateY(0) scale(.96);
+  }
+  .send-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  .footer-hint {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-top: 10px;
+    letter-spacing: .4px;
+    opacity: .75;
+  }
+
+  @media (max-width: 600px) {
+    .bubble, .tool-call, .error-msg { max-width: 92%; }
+    .header { padding: 10px 14px; }
+    .logo { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo"><span class="flower">🌸</span> 飞花令 · 以诗会友</div>
+    <div class="spacer"></div>
+    <select id="modelSelect" title="切换模型"></select>
+    <button class="icon-btn" id="themeBtn" title="换肤（当前：暗夜）" aria-label="切换主题"><span class="theme-icon">🌙</span></button>
+    <button class="icon-btn" id="newChatBtn" title="新对话">＋ 新对话</button>
+  </header>
+
+  <main class="chat" id="chat"></main>
+
+  <footer class="composer">
+    <div class="composer-inner">
+      <!-- 旧示例文案（已收敛为占位符，保留备查）：
+           以"Y"行令 / 接龙"床前明月光" / 写一句思乡的诗 -->
+      <textarea id="input" rows="1" placeholder="问我一句诗、行一道令、接一首龙…（Enter 发送，Shift+Enter 换行）"></textarea>
+      <button class="send-btn" id="sendBtn" title="发送">➤</button>
+    </div>
+    <div class="footer-hint">学而时习之，不亦说乎</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const chatEl = document.getElementById('chat');
+  const inputEl = document.getElementById('input');
+  const sendBtn = document.getElementById('sendBtn');
+  const modelSelect = document.getElementById('modelSelect');
+  const newChatBtn = document.getElementById('newChatBtn');
+  const themeBtn = document.getElementById('themeBtn');
+
+  // ---- 主题换肤（按当前时间自动选择 / 手动循环切换）----
+  const THEMES = [
+    { key: 'dark',  name: '暗夜' },
+    { key: 'light', name: '素笺' },
+    { key: 'ink',   name: '墨韵' },
+  ];
+  // 图标随当前主题切换：暗 → 月，亮 → 日，墨 → 半月（中性）
+  const THEME_ICON = { dark: '🌙', light: '☀️', ink: '🌓' };
+  // 特殊 key：未手动选过时，按当前时间自动挑主题
+  const AUTO_KEY = '__auto__';
+
+  // 自动规则：日间（6-17）素笺，黄昏（17-19）墨韵，夜晚（19-6）暗夜
+  function autoThemeByTime() {
+    const h = new Date().getHours();
+    if (h >= 6 && h < 17) return 'light';
+    if (h >= 17 && h < 19) return 'ink';
+    return 'dark';
+  }
+
+  function applyTheme(key) {
+    const isAuto = (key == null) || key === AUTO_KEY;
+    const actualKey = isAuto ? autoThemeByTime() : key;
+    const t = THEMES.find(x => x.key === actualKey) || THEMES[0];
+    document.documentElement.setAttribute('data-theme', t.key);
+    try {
+      if (isAuto) localStorage.removeItem('fh_theme');
+      else localStorage.setItem('fh_theme', t.key);
+    } catch (_) {}
+    if (themeBtn) {
+      const iconEl = themeBtn.querySelector('.theme-icon');
+      const mode = isAuto ? '自动' : '手动';
+      themeBtn.title = mode + ' · ' + t.name + '（点击循环）';
+      if (iconEl) iconEl.textContent = THEME_ICON[t.key] || '🌙';
+    }
+  }
+
+  function currentThemeKey() {
+    let v = null;
+    try { v = localStorage.getItem('fh_theme'); } catch (_) {}
+    return (v && THEMES.some(x => x.key === v)) ? v : AUTO_KEY;
+  }
+
+  function cycleTheme() {
+    // 顺序：auto → dark → light → ink → auto ...
+    const cur = currentThemeKey();
+    const curIdx = (cur === AUTO_KEY) ? -1 : THEMES.findIndex(x => x.key === cur);
+    const nextKey = (curIdx + 1 >= THEMES.length)
+      ? AUTO_KEY
+      : THEMES[curIdx + 1].key;
+    applyTheme(nextKey);
+  }
+
+  if (themeBtn) themeBtn.addEventListener('click', cycleTheme);
+
+  // 首次加载：没有手动选择时按当前时间自动应用；已选过则沿用
+  applyTheme(currentThemeKey());
+
+  // 自动模式下，每分钟检查一次，跨过日/夜/黄昏切换点则平滑切换
+  setInterval(() => {
+    if (currentThemeKey() === AUTO_KEY) applyTheme(AUTO_KEY);
+  }, 60 * 1000);
+
+  let sessionId = localStorage.getItem('fh_session_id') || '';
+  let currentModel = '';
+  let busy = false;
+
+  // ---- 初始化：加载模型列表 ----
+  async function loadModels() {
+    try {
+      const resp = await fetch('/api/models');
+      const data = await resp.json();
+      const defaultModel = data.default;
+      currentModel = defaultModel;
+      const models = data.models || {};
+      modelSelect.innerHTML = '';
+      for (const [key, m] of Object.entries(models)) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        // 简洁展示：去掉 description 里的"（默认）"标记（select 选中态已自带视觉强调）
+        // 形如 "hy · 腾讯混元 Hy3（默认）" → "腾讯混元 Hy3"
+        const desc = (m.description || m.model).replace(/[（(]默认[)）]?/g, '').trim();
+        opt.textContent = desc;
+        opt.title = `${key} → ${m.model}`; // hover 时展示 key 与上游真实模型名，便于排查
+        if (key === defaultModel) opt.selected = true;
+        modelSelect.appendChild(opt);
+      }
+    } catch (e) {
+      console.error('加载模型列表失败', e);
+    }
+  }
+
+  // ---- 消息渲染 ----
+  function renderWelcome() {
+    chatEl.innerHTML = '';
+    const w = document.createElement('div');
+    w.className = 'welcome';
+    w.innerHTML = `
+      <h1>🌸 诗词飞花令</h1>
+      <div class="hint">
+        我可以陪你行飞花令、接龙、荐诗、解读名句。<br>试试：<br>
+        <span>以"月"行令</span><span>接龙"床前明月光"</span><span>写一句思乡的诗</span><span>这句诗什么意思</span>
+      </div>`;
+    chatEl.appendChild(w);
+  }
+
+  function appendUser(text) {
+    const row = document.createElement('div');
+    row.className = 'row user';
+    row.innerHTML = `<div class="bubble"></div>`;
+    row.querySelector('.bubble').textContent = text;
+    chatEl.appendChild(row);
+    scrollBottom();
+    return row;
+  }
+
+  // 创建一个 assistant 消息骨架，返回 bubble 元素供流式追加
+  function appendAssistant() {
+    const row = document.createElement('div');
+    row.className = 'row assistant';
+    row.innerHTML = `<div class="bubble"></div>`;
+    chatEl.appendChild(row);
+    scrollBottom();
+    return { row, bubble: row.querySelector('.bubble') };
+  }
+
+  function appendToolCall(name, args) {
+    const row = document.createElement('div');
+    row.className = 'row assistant';
+    const div = document.createElement('div');
+    div.className = 'tool-call';
+    let argsShort = '';
+    try { argsShort = JSON.stringify(JSON.parse(args)); } catch (e) { argsShort = args; }
+    if (argsShort.length > 60) argsShort = argsShort.slice(0, 60) + '…';
+    div.innerHTML = `<span class="icon">🔧</span> 调用工具 <code>${escapeHtml(name)}</code>${argsShort ? ` <code>${escapeHtml(argsShort)}</code>` : ''}`;
+    row.appendChild(div);
+    chatEl.appendChild(row);
+    scrollBottom();
+  }
+
+  function appendError(msg) {
+    const row = document.createElement('div');
+    row.className = 'row assistant';
+    row.innerHTML = `<div class="error-msg">⚠️ ${escapeHtml(msg)}</div>`;
+    chatEl.appendChild(row);
+    scrollBottom();
+  }
+
+  function scrollBottom() {
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ---- SSE 解析 ----
+  function parseSSEBlock(block) {
+    let event = 'message';
+    const dataLines = [];
+    for (const line of block.split('\n')) {
+      if (line.startsWith('event:')) event = line.slice(6).trim();
+      else if (line.startsWith('data:')) dataLines.push(line.slice(5).trim());
+    }
+    if (dataLines.length === 0) return null;
+    let data;
+    try { data = JSON.parse(dataLines.join('\n')); } catch (e) { data = {}; }
+    return { event, data };
+  }
+
+  // ---- 发送 ----
+  async function send() {
+    const text = inputEl.value.trim();
+    if (!text || busy) return;
+    busy = true;
+    sendBtn.disabled = true;
+    inputEl.value = '';
+    autoResize();
+
+    // 欢迎语 -> 清空
+    if (chatEl.querySelector('.welcome')) chatEl.innerHTML = '';
+
+    appendUser(text);
+    const { bubble } = appendAssistant();
+    let cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    bubble.appendChild(cursor);
+
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_id: sessionId, model: currentModel })
+      });
+      if (!resp.ok) {
+        throw new Error('HTTP ' + resp.status);
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let idx;
+        while ((idx = buffer.indexOf('\n\n')) >= 0) {
+          const block = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          const msg = parseSSEBlock(block);
+          if (!msg) continue;
+
+          switch (msg.event) {
+            case 'meta':
+              sessionId = msg.data.session_id || sessionId;
+              localStorage.setItem('fh_session_id', sessionId);
+              break;
+            case 'delta':
+              cursor.remove();
+              bubble.appendChild(document.createTextNode(msg.data.content || ''));
+              bubble.appendChild(cursor);
+              scrollBottom();
+              break;
+            case 'tool_call':
+              cursor.remove();
+              appendToolCall(msg.data.name, msg.data.arguments);
+              break;
+            case 'error':
+              appendError(msg.data.message || '未知错误');
+              break;
+            case 'done':
+            case 'close':
+              break;
+          }
+        }
+      }
+      cursor.remove();
+    } catch (e) {
+      cursor.remove();
+      appendError('请求失败：' + e.message + '（请确认服务端已启动、API Key 已配置）');
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+
+  // ---- 事件绑定 ----
+  sendBtn.addEventListener('click', send);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  });
+  inputEl.addEventListener('input', autoResize);
+
+  function autoResize() {
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
+  }
+
+  modelSelect.addEventListener('change', () => {
+    currentModel = modelSelect.value;
+  });
+
+  newChatBtn.addEventListener('click', async () => {
+    // 服务端重置历史
+    if (sessionId) {
+      try {
+        await fetch('/api/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId })
+        });
+      } catch (e) { /* 忽略 */ }
+    }
+    sessionId = '';
+    localStorage.removeItem('fh_session_id');
+    renderWelcome();
+  });
+
+  // 欢迎区点击示例
+  chatEl.addEventListener('click', (e) => {
+    if (e.target.tagName === 'SPAN' && chatEl.querySelector('.welcome')) {
+      inputEl.value = e.target.textContent;
+      send();
+    }
+  });
+
+  // 初始化
+  loadModels();
+  renderWelcome();
+})();
+</script>
+</body>
+</html>

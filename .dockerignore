@@ -1,0 +1,22 @@
+# 版本控制
+.git
+.gitignore
+
+# IDE / 编辑器
+.codebuddy
+.idea
+.vscode
+
+# 文档（不进镜像）
+*.md
+
+# 部署清单（不进镜像）
+deploy/
+k8s/
+.github/
+
+# 本地构建产物
+feihua-agent
+*.exe
+*.test
+*.out

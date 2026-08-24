@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shiling-config
+  namespace: shiling
+  labels:
+    app.kubernetes.io/name: shiling
+data:
+  config.json: |
+    {
+        "default_model": "hy",
+        "models": {
+            "hy": {
+                "provider": "tencent",
+                "base_url": "https://tokenhub.tencentmaas.com/v1",
+                "model": "hy3",
+                "api_key_env": "HY_API_KEY",
+                "description": "腾讯混元 Hy3（默认）"
+            },
+            "deepseek-chat": {
+                "provider": "deepseek",
+                "base_url": "https://api.deepseek.com",
+                "model": "deepseek-chat",
+                "api_key_env": "DEEPSEEK_API_KEY",
+                "description": "DeepSeek V3 对话模型"
+            },
+            "deepseek-reasoner": {
+                "provider": "deepseek",
+                "base_url": "https://api.deepseek.com",
+                "model": "deepseek-reasoner",
+                "api_key_env": "DEEPSEEK_API_KEY",
+                "description": "DeepSeek R1 推理模型（深度思考）"
+            },
+            "gpt-4o": {
+                "provider": "openai",
+                "base_url": "https://api.openai.com/v1",
+                "model": "gpt-4o",
+                "api_key_env": "OPENAI_API_KEY",
+                "description": "OpenAI GPT-4o（多模态）"
+            },
+            "gpt-4o-mini": {
+                "provider": "openai",
+                "base_url": "https://api.openai.com/v1",
+                "model": "gpt-4o-mini",
+                "api_key_env": "OPENAI_API_KEY",
+                "description": "OpenAI GPT-4o mini（轻量快速）"
+            },
+            "claude-sonnet": {
+                "provider": "anthropic",
+                "base_url": "https://api.anthropic.com/v1",
+                "model": "claude-3-5-sonnet-20241022",
+                "api_key_env": "ANTHROPIC_API_KEY",
+                "description": "Anthropic Claude 3.5 Sonnet"
+            },
+            "kimi": {
+                "provider": "moonshot",
+                "base_url": "https://api.moonshot.cn/v1",
+                "model": "moonshot-v1-8k",
+                "api_key_env": "MOONSHOT_API_KEY",
+                "description": "月之暗面 Kimi（8K 上下文）"
+            },
+            "qwen-plus": {
+                "provider": "alibaba",
+                "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "model": "qwen-plus",
+                "api_key_env": "DASHSCOPE_API_KEY",
+                "description": "阿里云 通义千问 Plus"
+            },
+            "ollama-local": {
+                "provider": "ollama",
+                "base_url": "http://localhost:11434/v1",
+                "model": "qwen2.5:7b",
+                "no_auth": true,
+                "description": "本地 Ollama（无需 key，确保 ollama serve 已启动）"
+            }
+        }
+    }
