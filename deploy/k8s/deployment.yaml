@@ -22,9 +22,9 @@ spec:
         fsGroup: 1000
       containers:
         - name: shiling
-          # 流水线会自动替换 tag 为 CI_COMMIT_SHORT_SHA
-          image: shiling:latest
-          imagePullPolicy: IfNotPresent
+          # __IMAGE__ 由 CI（deploy.yml）通过 sed 替换为 GHCR 真实镜像地址
+          image: __IMAGE__
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080

@@ -1,15 +1,17 @@
 # 飞花令 Agent CI/CD 流水线（GitHub Actions）
-# 流程：build（构建并推送镜像到 GHCR）→ deploy（部署到 Kubernetes）
+# 打包部署方式参考 web-manager/.github/workflows/ci.yaml：
+#   - 镜像构建并推送 GHCR（latest + commit SHA）
+#   - kubeconfig 以原文直接写入（无需 base64 编码）
+#   - deployment.yaml 使用 __IMAGE__ 占位符，由 CI 替换
 #
-# 前置配置（仓库 Settings → Secrets and variables → Actions → Secrets）：
-#   - KUBECONFIG          ：目标 K8s 集群 kubeconfig（base64 编码后存入）
-#                          生成：cat ~/.kube/config | base64 | pbcopy
-#   - HY_API_KEY          ：腾讯混元 Key（默认模型，必填）
-#   - DEEPSEEK_API_KEY    ：DeepSeek Key（可选）
-#   - OPENAI_API_KEY      ：OpenAI Key（可选）
-#   - ANTHROPIC_API_KEY   ：Claude Key（可选）
-#   - MOONSHOT_API_KEY    ：Kimi Key（可选）
-#   - DASHSCOPE_API_KEY   ：通义千问 Key（可选）
+# 前置配置（Settings → Secrets and variables → Actions → Secrets）：
+#   - KUBE_CONFIG      ：目标 K8s 集群 kubeconfig（原文 YAML 直接粘贴）
+#   - HY_API_KEY       ：腾讯混元 Key（默认模型，必填）
+#   - DEEPSEEK_API_KEY ：DeepSeek Key（可选）
+#   - OPENAI_API_KEY   ：OpenAI Key（可选）
+#   - ANTHROPIC_API_KEY：Claude Key（可选）
+#   - MOONSHOT_API_KEY ：Kimi Key（可选）
+#   - DASHSCOPE_API_KEY：通义千问 Key（可选）
 # 推送镜像到 GHCR 无需额外密钥，使用内置 GITHUB_TOKEN 即可。
 
 name: Build & Deploy to Kubernetes
@@ -44,7 +46,7 @@ jobs:
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,16 +56,13 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   # ---------- 阶段二：部署到 Kubernetes ----------
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://shiling.example.com # TODO: 改成你的真实域名
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,10 +72,11 @@ jobs:
         with:
           version: latest
 
-      - name: Configure kubeconfig
+      # kubeconfig 以原文写入（与 web-manager/ci.yaml 一致，无需 base64）
+      - name: Prepare kubeconfig
         run: |
           mkdir -p "$HOME/.kube"
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > "$HOME/.kube/config"
+          echo "${{ secrets.KUBE_CONFIG }}" > "$HOME/.kube/config"
           chmod 600 "$HOME/.kube/config"
 
       - name: Inject API keys as Secret
@@ -91,12 +91,11 @@ jobs:
             --from-literal=DASHSCOPE_API_KEY="${{ secrets.DASHSCOPE_API_KEY }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy to cluster
+      - name: Substitute image and apply manifests
         env:
           IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         run: |
-          sed -i "s|image: shiling:latest|image: ${IMAGE}|" deploy/k8s/deployment.yaml
-          kubectl apply -f deploy/k8s/namespace.yaml
+          sed -i "s|__IMAGE__|${IMAGE}|g" deploy/k8s/deployment.yaml
           kubectl apply -f deploy/k8s/configmap.yaml
           kubectl apply -f deploy/k8s/deployment.yaml
           kubectl apply -f deploy/k8s/service.yaml

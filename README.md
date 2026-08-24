@@ -253,7 +253,7 @@ kubectl -n shiling get pods
 | 配置项 | 位置 | 说明 |
 |---|---|---|
 | `HY_API_KEY` 等 6 个密钥 | Settings → Secrets and variables → Actions → Secrets | 真实密钥，由流水线注入 Secret |
-| `KUBECONFIG` | 同上（base64 编码后存入） | 目标 K8s 集群凭证 |
+| `KUBE_CONFIG` | 同上（**kubeconfig 原文直接粘贴**，无需 base64） | 目标 K8s 集群凭证，参照 web-manager 的 `KUBE_CONFIG` 用法 |
 | `GITHUB_TOKEN` | 内置 | 推送镜像到 GHCR 自动可用 |
 | 域名 | `deploy/k8s/ingress.yaml` + `.github/workflows/deploy.yml` | 改成真实域名 |
 
