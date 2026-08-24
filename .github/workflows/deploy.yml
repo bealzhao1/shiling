@@ -111,15 +111,11 @@ jobs:
 
       - name: Wait for rollout
         run: |
-          set +e
+          echo "--- pods ---"
+          kubectl -n shiling get pods -o wide
+          echo "--- recent events ---"
+          kubectl -n shiling get events --sort-by='.lastTimestamp'
+          echo "--- deployment describe ---"
+          kubectl -n shiling describe deployment/shiling
+          echo "--- rollout status ---"
           kubectl -n shiling rollout status deployment/shiling --timeout=180s
-          status=$?
-          if [ $status -ne 0 ]; then
-            echo "--- pods ---"
-            kubectl -n shiling get pods -o wide
-            echo "--- recent events ---"
-            kubectl -n shiling get events --sort-by='.lastTimestamp'
-            echo "--- deployment describe ---"
-            kubectl -n shiling describe deployment/shiling
-          fi
-          exit $status
