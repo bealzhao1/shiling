@@ -14,7 +14,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: shiling.example.com # TODO: 改成你的真实域名
+    - host: shiling.bealzhao.cn
       http:
         paths:
           - path: /
