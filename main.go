@@ -35,7 +35,7 @@ import (
 const (
 	skillPath        = "skills/shiling/SKILL.md"
 	defaultConfigPath = "config.json"
-	defaultAddr       = ":8080"
+	defaultAddr       = ":8082"
 	defaultWebDir     = "web"
 )
 

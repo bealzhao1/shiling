@@ -81,6 +81,7 @@ jobs:
 
       - name: Inject API keys as Secret
         run: |
+          kubectl apply -f deploy/k8s/namespace.yaml
           kubectl -n shiling create secret generic shiling-secrets \
             --from-literal=HY_API_KEY="${{ secrets.HY_API_KEY }}" \
             --from-literal=DEEPSEEK_API_KEY="${{ secrets.DEEPSEEK_API_KEY }}" \
