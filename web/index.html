@@ -4,179 +4,390 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>飞花令 · 以诗会友</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Noto+Serif+SC:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ============ 主题：默认「暗夜」 ============ */
+  /* ============ 主题：默认「夜雨」深色 ============ */
   :root {
-    --bg: #0f1117;
-    --bg-soft: #171a23;
-    --panel: #1c2029;
-    --border: #2a2f3a;
+    --bg-1: #0b0d14;
+    --bg-2: #11141d;
+    --bg-grad: radial-gradient(1200px 600px at 20% -10%, #1a1d2e 0%, transparent 60%),
+               radial-gradient(1000px 500px at 90% 110%, #161929 0%, transparent 55%),
+               linear-gradient(180deg, #0b0d14 0%, #0a0c12 100%);
+    --panel: rgba(28, 32, 44, 0.72);
+    --panel-solid: #1c202c;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
     --text: #e8eaf0;
     --text-dim: #9aa3b2;
-    --accent: #7c6cff;
-    --accent-soft: rgba(124, 108, 255, 0.16);
-    --user-bubble: #2a5cff;
-    --tool-bg: #232733;
-    --tool-border: #3a3f4d;
-    --danger: #ff6b6b;
-    --radius: 16px;
+    --text-faint: #6b7280;
+    --accent: #a78bfa;          /* 紫，亮且不刺眼 */
+    --accent-2: #7dd3fc;        /* 天青 */
+    --accent-grad: linear-gradient(135deg, #a78bfa 0%, #7dd3fc 100%);
+    --accent-soft: rgba(167, 139, 250, 0.18);
+    --user-grad: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    --user-text: #fff;
+    --tool-bg: rgba(167, 139, 250, 0.08);
+    --tool-border: rgba(167, 139, 250, 0.28);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.10);
+    --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 2px 12px -2px rgba(0, 0, 0, 0.35);
+    --radius: 18px;
+    --radius-sm: 12px;
   }
-  /* ============ 主题：「素笺」宣纸浅色 ============ */
+
+  /* ============ 主题：「晴川」白底 ============ */
   :root[data-theme="light"] {
-    --bg: #f5f0e6;
-    --bg-soft: #faf6ec;
-    --panel: #fffdf7;
-    --border: #e0d8c4;
-    --text: #2b2a26;
-    --text-dim: #8a7f6a;
-    --accent: #a83232;
-    --accent-soft: rgba(168, 50, 50, 0.14);
-    --user-bubble: #a83232;
-    --tool-bg: #ede6d4;
-    --tool-border: #d6cdb6;
-    --danger: #c0392b;
+    --bg-1: #f6f7fb;
+    --bg-2: #ffffff;
+    --bg-grad:
+      radial-gradient(900px 500px at 0% -10%, #e9e4ff 0%, transparent 55%),
+      radial-gradient(800px 500px at 100% 110%, #d8ecff 0%, transparent 55%),
+      linear-gradient(180deg, #fafbff 0%, #f3f5fb 100%);
+    --panel: rgba(255, 255, 255, 0.78);
+    --panel-solid: #ffffff;
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --text: #1f2937;
+    --text-dim: #64748b;
+    --text-faint: #94a3b8;
+    --accent: #c1272d;          /* 朱砂红 */
+    --accent-2: #c1272d;
+    --accent-grad: linear-gradient(135deg, #e0464c 0%, #c1272d 100%);
+    --accent-soft: rgba(193, 39, 45, 0.12);
+    --user-grad: linear-gradient(135deg, #d23a40 0%, #b41e25 100%);
+    --user-text: #fff;
+    --tool-bg: rgba(193, 39, 45, 0.06);
+    --tool-border: rgba(193, 39, 45, 0.22);
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.08);
+    --shadow: 0 10px 40px -12px rgba(15, 23, 42, 0.10);
+    --shadow-sm: 0 2px 12px -2px rgba(15, 23, 42, 0.06);
   }
-  /* ============ 主题：「墨韵」深青墨 ============ */
+
+  /* ============ 主题：「青墨」墨绿 ============ */
   :root[data-theme="ink"] {
-    --bg: #1e2128;
-    --bg-soft: #262a33;
-    --panel: #2c303b;
-    --border: #3a4050;
-    --text: #d8dee9;
-    --text-dim: #8a93a3;
-    --accent: #88c0d0;
-    --accent-soft: rgba(136, 192, 208, 0.16);
-    --user-bubble: #5e81ac;
-    --tool-bg: #2f3441;
-    --tool-border: #434a5c;
-    --danger: #bf616a;
+    --bg-1: #14201d;
+    --bg-2: #0f1a17;
+    --bg-grad: radial-gradient(1000px 500px at 0% -10%, #1a2b27 0%, transparent 60%),
+               radial-gradient(900px 500px at 100% 110%, #0f2622 0%, transparent 55%),
+               linear-gradient(180deg, #14201d 0%, #0e1816 100%);
+    --panel: rgba(20, 32, 29, 0.72);
+    --panel-solid: #1a2522;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text: #e6f0ec;
+    --text-dim: #93a8a1;
+    --text-faint: #6c8079;
+    --accent: #4ade80;          /* 竹青 */
+    --accent-2: #34d399;
+    --accent-grad: linear-gradient(135deg, #86efac 0%, #4ade80 100%);
+    --accent-soft: rgba(74, 222, 128, 0.18);
+    --user-grad: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    --user-text: #ecfdf5;
+    --tool-bg: rgba(74, 222, 128, 0.08);
+    --tool-border: rgba(74, 222, 128, 0.28);
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.10);
+    --shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 2px 12px -2px rgba(0, 0, 0, 0.3);
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    background: var(--bg);
+    background: var(--bg-grad);
+    background-attachment: fixed;
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                 "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    font-family: "Inter", "PingFang SC", "Microsoft YaHei", -apple-system,
+                 BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     display: flex;
     justify-content: center;
+    overflow: hidden;
   }
+  ::selection { background: var(--accent-soft); color: var(--text); }
+
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  ::-webkit-scrollbar-track { background: transparent; }
+
   .app {
     width: 100%;
-    max-width: 860px;
+    max-width: 920px;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
-  /* 顶部栏 */
+  /* ================= 顶部栏 ================= */
   .header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 20px;
+    padding: 16px 24px;
+    background: var(--panel);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
-    background: var(--bg-soft);
-    backdrop-filter: blur(8px);
     position: sticky;
     top: 0;
     z-index: 10;
   }
-  .logo { font-weight: 700; font-size: 17px; white-space: nowrap; }
-  .logo .flower { color: var(--accent); }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: var(--accent-grad);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 17px;
+    box-shadow: 0 4px 14px var(--accent-soft);
+    flex-shrink: 0;
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+  .brand-title {
+    font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .brand-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+  }
   .spacer { flex: 1; }
-  select {
-    background: var(--panel);
+
+  .chip {
+    background: var(--panel-solid);
     color: var(--text);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-    max-width: 220px;
-  }
-  select:hover { border-color: var(--accent); }
-  .icon-btn {
-    background: var(--panel);
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 14px;
+    border-radius: 999px;
+    padding: 7px 14px;
     font-size: 13px;
     cursor: pointer;
     white-space: nowrap;
-    transition: all .15s;
+    transition: all .18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
   }
-  .icon-btn:hover { color: var(--text); border-color: var(--accent); }
-  .theme-icon { font-size: 15px; line-height: 1; display: inline-block; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+  .chip:active { transform: translateY(0); }
+  .chip .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-grad);
+  }
+  .chip svg { width: 14px; height: 14px; }
 
-  /* 消息区 */
+  select.chip {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--text-dim) 50%),
+      linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
+    background-position: calc(100% - 14px) 50%, calc(100% - 10px) 50%;
+    background-size: 4px 4px, 4px 4px;
+    background-repeat: no-repeat;
+    padding-right: 26px;
+    max-width: 200px;
+  }
+  select.chip option { background: var(--panel-solid); color: var(--text); }
+
+  /* ================= 欢迎区 ================= */
   .chat {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 20px;
+    padding: 24px 24px 16px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
     scroll-behavior: smooth;
   }
   .welcome {
     margin: auto;
     text-align: center;
-    color: var(--text-dim);
-    max-width: 520px;
+    padding: 24px;
+    max-width: 580px;
   }
-  .welcome h1 { font-size: 28px; color: var(--text); margin-bottom: 12px; }
-  .welcome .hint { font-size: 14px; line-height: 1.8; }
-  .welcome .hint span {
-    display: inline-block;
-    background: var(--panel);
+  .welcome .seal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px; height: 76px;
+    border-radius: 20px;
+    background: var(--accent-grad);
+    color: #fff;
+    font-family: "Noto Serif SC", serif;
+    font-size: 38px;
+    font-weight: 700;
+    box-shadow: 0 12px 36px var(--accent-soft);
+    margin-bottom: 22px;
+    transform: rotate(-3deg);
+  }
+  .welcome h1 {
+    font-family: "Noto Serif SC", "Songti SC", serif;
+    font-weight: 600;
+    font-size: 34px;
+    letter-spacing: 4px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .welcome .sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+  }
+  .welcome .sub::before,
+  .welcome .sub::after {
+    content: "·";
+    margin: 0 10px;
+    color: var(--text-faint);
+  }
+  .welcome .examples {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .welcome .example {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--panel-solid);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 4px 10px;
-    margin: 4px 3px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
     color: var(--text);
     cursor: pointer;
-    transition: all .15s;
+    transition: all .2s ease;
+    text-align: left;
   }
-  .welcome .hint span:hover { border-color: var(--accent); color: var(--accent); }
+  .welcome .example:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .welcome .example .ico {
+    width: 28px; height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
 
-  .row { display: flex; flex-direction: column; animation: fadeIn .25s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
-  .row.user { align-items: flex-end; }
+  /* ================= 消息 ================= */
+  .row {
+    display: flex;
+    flex-direction: column;
+    animation: msgIn .35s cubic-bezier(.2, .8, .2, 1);
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .row.user      { align-items: flex-end; }
   .row.assistant { align-items: flex-start; }
 
+  .msg-meta {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin: 0 12px 6px;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .msg-meta .avatar {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    background: var(--accent-grad);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+  .row.user .msg-meta { flex-direction: row-reverse; }
+
   .bubble {
-    max-width: 82%;
+    max-width: 84%;
     padding: 12px 16px;
     border-radius: var(--radius);
-    line-height: 1.65;
+    line-height: 1.75;
     font-size: 15px;
     white-space: pre-wrap;
     word-break: break-word;
+    position: relative;
   }
   .row.user .bubble {
-    background: var(--user-bubble);
+    background: var(--user-grad);
+    color: var(--user-text);
     border-bottom-right-radius: 6px;
-    color: #fff;
+    box-shadow: 0 6px 20px -6px var(--accent-soft);
   }
   .row.assistant .bubble {
-    background: var(--panel);
-    border-bottom-left-radius: 6px;
+    background: var(--panel-solid);
+    color: var(--text);
     border: 1px solid var(--border);
+    border-bottom-left-radius: 6px;
+    box-shadow: var(--shadow-sm);
   }
   .bubble .cursor {
     display: inline-block;
-    width: 8px; height: 16px;
+    width: 7px; height: 16px;
     background: var(--accent);
-    margin-left: 2px;
+    margin-left: 3px;
     vertical-align: text-bottom;
+    border-radius: 2px;
     animation: blink 1s steps(1) infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
 
-  /* 工具调用卡片 */
+  /* typing dots */
+  .typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: typing 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+    30%           { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* ================= 工具调用卡片 ================= */
   .tool-call {
     display: flex;
     align-items: center;
@@ -185,56 +396,108 @@
     padding: 8px 12px;
     background: var(--tool-bg);
     border: 1px dashed var(--tool-border);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     font-size: 12.5px;
     color: var(--text-dim);
-    max-width: 82%;
+    max-width: 84%;
   }
-  .tool-call .icon { color: var(--accent); font-weight: 700; }
+  .tool-call .ico {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
   .tool-call code {
-    background: rgba(0,0,0,.25);
-    padding: 1px 6px;
+    background: rgba(0,0,0,.18);
+    padding: 1px 7px;
     border-radius: 5px;
     font-family: "SF Mono", Consolas, monospace;
-    font-size: 12px;
+    font-size: 11.5px;
   }
+  :root[data-theme="light"] .tool-call code { background: rgba(15, 23, 42, .06); }
 
+  /* ================= 错误条 ================= */
   .error-msg {
-    background: rgba(255,107,107,.1);
+    background: var(--danger-bg);
     border: 1px solid var(--danger);
     color: var(--danger);
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
-    max-width: 82%;
+    max-width: 84%;
+    line-height: 1.65;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
   }
+  .error-msg .error-text { flex: 1; min-width: 0; word-break: break-word; }
+  .error-msg .retry-btn {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 5px 12px 5px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .15s ease, color .15s ease,
+                transform .15s ease, box-shadow .15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  .error-msg .retry-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
+  }
+  .error-msg .retry-btn:active { transform: translateY(0) scale(.97); }
+  .error-msg .retry-btn:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .error-msg .retry-icon {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1;
+    transform-origin: center;
+  }
+  .error-msg .retry-btn.spinning .retry-icon {
+    animation: retrySpin 1s linear infinite;
+  }
+  @keyframes retrySpin { to { transform: rotate(360deg); } }
 
-  /* 输入区 */
-  .composer {
-    padding: 16px 20px 14px;
-    border-top: 1px solid var(--border);
-    background: var(--bg-soft);
+  /* ================= 输入区 ================= */
+  .composer-wrap {
+    padding: 12px 24px 18px;
   }
-  .composer-inner {
+  .composer {
     display: flex;
     gap: 8px;
     align-items: flex-end;
-    background: var(--panel);
+    background: var(--panel-solid);
     border: 1px solid var(--border);
     border-radius: 22px;
     padding: 8px 8px 8px 18px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+    box-shadow: var(--shadow);
     transition: border-color .2s ease, box-shadow .25s ease,
-                background-color .2s ease;
+                background-color .2s ease, transform .2s ease;
   }
-  .composer-inner:hover {
-    border-color: var(--accent);
-  }
-  .composer-inner:focus-within {
+  .composer:hover { border-color: var(--border-strong); }
+  .composer:focus-within {
     border-color: var(--accent);
     box-shadow:
       0 0 0 4px var(--accent-soft),
-      0 8px 24px rgba(0, 0, 0, .18);
+      var(--shadow);
   }
   textarea {
     flex: 1;
@@ -247,81 +510,90 @@
     resize: none;
     max-height: 180px;
     line-height: 1.55;
-    padding: 8px 0;
+    padding: 9px 0;
     letter-spacing: .15px;
   }
-  textarea::placeholder {
-    color: var(--text-dim);
-    transition: opacity .2s ease;
-  }
-  .composer-inner:focus-within textarea::placeholder { opacity: .5; }
+  textarea::placeholder { color: var(--text-faint); transition: opacity .2s ease; }
+  .composer:focus-within textarea::placeholder { opacity: .6; }
   .send-btn {
-    background: var(--accent);
+    background: var(--accent-grad);
     color: #fff;
     border: none;
-    border-radius: 14px;
-    width: 40px;
-    height: 40px;
+    border-radius: 16px;
+    width: 42px; height: 42px;
     font-size: 17px;
     cursor: pointer;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px var(--accent-soft);
+    box-shadow: 0 6px 18px var(--accent-soft);
     transition: transform .15s ease, box-shadow .2s ease, filter .15s ease;
   }
   .send-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    filter: brightness(1.08);
-    box-shadow: 0 6px 20px var(--accent-soft);
+    transform: translateY(-1px) scale(1.04);
+    filter: brightness(1.05);
+    box-shadow: 0 8px 22px var(--accent-soft);
   }
-  .send-btn:active:not(:disabled) {
-    transform: translateY(0) scale(.96);
-  }
-  .send-btn:disabled {
-    opacity: .35;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-  }
+  .send-btn:active:not(:disabled) { transform: translateY(0) scale(.96); }
+  .send-btn:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; transform: none; }
+  .send-btn svg { width: 16px; height: 16px; }
+
   .footer-hint {
     text-align: center;
-    color: var(--text-dim);
+    color: var(--text-faint);
     font-size: 11px;
     margin-top: 10px;
-    letter-spacing: .4px;
-    opacity: .75;
+    letter-spacing: 2px;
+    font-family: "Noto Serif SC", serif;
+    opacity: .7;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 720px) {
+    .header { padding: 12px 16px; gap: 8px; }
+    .brand-sub { display: none; }
+    .chat { padding: 18px 16px 12px; }
+    .composer-wrap { padding: 10px 16px 14px; }
     .bubble, .tool-call, .error-msg { max-width: 92%; }
-    .header { padding: 10px 14px; }
-    .logo { font-size: 15px; }
+    .welcome h1 { font-size: 28px; letter-spacing: 2px; }
+    .welcome .examples { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 <div class="app">
   <header class="header">
-    <div class="logo"><span class="flower">🌸</span> 飞花令 · 以诗会友</div>
+    <div class="brand">
+      <div class="brand-mark">花</div>
+      <div class="brand-text">
+        <div class="brand-title">飞花令</div>
+        <div class="brand-sub">以诗会友</div>
+      </div>
+    </div>
     <div class="spacer"></div>
-    <select id="modelSelect" title="切换模型"></select>
-    <button class="icon-btn" id="themeBtn" title="换肤（当前：暗夜）" aria-label="切换主题"><span class="theme-icon">🌙</span></button>
-    <button class="icon-btn" id="newChatBtn" title="新对话">＋ 新对话</button>
+    <select class="chip" id="modelSelect" title="切换模型"></select>
+    <button class="chip" id="themeBtn" title="换肤" aria-label="切换主题">
+      <span id="themeIcon"></span>
+    </button>
+    <button class="chip" id="newChatBtn" title="新对话">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      新对话
+    </button>
   </header>
 
   <main class="chat" id="chat"></main>
 
-  <footer class="composer">
-    <div class="composer-inner">
-      <!-- 旧示例文案（已收敛为占位符，保留备查）：
-           以"Y"行令 / 接龙"床前明月光" / 写一句思乡的诗 -->
+  <div class="composer-wrap">
+    <div class="composer">
       <textarea id="input" rows="1" placeholder="问我一句诗、行一道令、接一首龙…（Enter 发送，Shift+Enter 换行）"></textarea>
-      <button class="send-btn" id="sendBtn" title="发送">➤</button>
+      <button class="send-btn" id="sendBtn" title="发送" aria-label="发送">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12l14-7-5 7 5 7z"/>
+        </svg>
+      </button>
     </div>
-    <div class="footer-hint">学而时习之，不亦说乎</div>
-  </footer>
+    <div class="footer-hint">学而时习之 · 不亦说乎</div>
+  </div>
 </div>
 
 <script>
@@ -332,19 +604,23 @@
   const modelSelect = document.getElementById('modelSelect');
   const newChatBtn = document.getElementById('newChatBtn');
   const themeBtn = document.getElementById('themeBtn');
+  const themeIcon = document.getElementById('themeIcon');
 
-  // ---- 主题换肤（按当前时间自动选择 / 手动循环切换）----
+  // SVG 主题图标
+  const ICONS = {
+    dark:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+    ink:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M2 22c4-2 7-2 10 0s6 2 10 0"/><path d="M12 2v18"/><path d="M5 7c2 2 5 2 7 0s5-2 7 0"/><path d="M5 12c2 2 5 2 7 0s5-2 7 0"/></svg>'
+  };
+
+  // ---- 主题 ----
   const THEMES = [
-    { key: 'dark',  name: '暗夜' },
-    { key: 'light', name: '素笺' },
-    { key: 'ink',   name: '墨韵' },
+    { key: 'dark',  name: '夜雨' },
+    { key: 'light', name: '晴川' },
+    { key: 'ink',   name: '青墨' },
   ];
-  // 图标随当前主题切换：暗 → 月，亮 → 日，墨 → 半月（中性）
-  const THEME_ICON = { dark: '🌙', light: '☀️', ink: '🌓' };
-  // 特殊 key：未手动选过时，按当前时间自动挑主题
   const AUTO_KEY = '__auto__';
 
-  // 自动规则：日间（6-17）素笺，黄昏（17-19）墨韵，夜晚（19-6）暗夜
   function autoThemeByTime() {
     const h = new Date().getHours();
     if (h >= 6 && h < 17) return 'light';
@@ -361,11 +637,10 @@
       if (isAuto) localStorage.removeItem('fh_theme');
       else localStorage.setItem('fh_theme', t.key);
     } catch (_) {}
-    if (themeBtn) {
-      const iconEl = themeBtn.querySelector('.theme-icon');
+    if (themeBtn && themeIcon) {
       const mode = isAuto ? '自动' : '手动';
       themeBtn.title = mode + ' · ' + t.name + '（点击循环）';
-      if (iconEl) iconEl.textContent = THEME_ICON[t.key] || '🌙';
+      themeIcon.innerHTML = ICONS[t.key] || ICONS.dark;
     }
   }
 
@@ -376,30 +651,25 @@
   }
 
   function cycleTheme() {
-    // 顺序：auto → dark → light → ink → auto ...
     const cur = currentThemeKey();
     const curIdx = (cur === AUTO_KEY) ? -1 : THEMES.findIndex(x => x.key === cur);
-    const nextKey = (curIdx + 1 >= THEMES.length)
-      ? AUTO_KEY
-      : THEMES[curIdx + 1].key;
+    const nextKey = (curIdx + 1 >= THEMES.length) ? AUTO_KEY : THEMES[curIdx + 1].key;
     applyTheme(nextKey);
   }
 
   if (themeBtn) themeBtn.addEventListener('click', cycleTheme);
-
-  // 首次加载：没有手动选择时按当前时间自动应用；已选过则沿用
   applyTheme(currentThemeKey());
-
-  // 自动模式下，每分钟检查一次，跨过日/夜/黄昏切换点则平滑切换
   setInterval(() => {
     if (currentThemeKey() === AUTO_KEY) applyTheme(AUTO_KEY);
   }, 60 * 1000);
 
+  // ---- 状态 ----
   let sessionId = localStorage.getItem('fh_session_id') || '';
   let currentModel = '';
   let busy = false;
+  let lastUserPrompt = '';
 
-  // ---- 初始化：加载模型列表 ----
+  // ---- 模型列表 ----
   async function loadModels() {
     try {
       const resp = await fetch('/api/models');
@@ -411,11 +681,9 @@
       for (const [key, m] of Object.entries(models)) {
         const opt = document.createElement('option');
         opt.value = key;
-        // 简洁展示：去掉 description 里的"（默认）"标记（select 选中态已自带视觉强调）
-        // 形如 "hy · 腾讯混元 Hy3（默认）" → "腾讯混元 Hy3"
         const desc = (m.description || m.model).replace(/[（(]默认[)）]?/g, '').trim();
         opt.textContent = desc;
-        opt.title = `${key} → ${m.model}`; // hover 时展示 key 与上游真实模型名，便于排查
+        opt.title = `${key} → ${m.model}`;
         if (key === defaultModel) opt.selected = true;
         modelSelect.appendChild(opt);
       }
@@ -424,35 +692,39 @@
     }
   }
 
-  // ---- 消息渲染 ----
+  // ---- 欢迎区 ----
   function renderWelcome() {
     chatEl.innerHTML = '';
     const w = document.createElement('div');
     w.className = 'welcome';
     w.innerHTML = `
-      <h1>🌸 诗词飞花令</h1>
-      <div class="hint">
-        我可以陪你行飞花令、接龙、荐诗、解读名句。<br>试试：<br>
-        <span>以"月"行令</span><span>接龙"床前明月光"</span><span>写一句思乡的诗</span><span>这句诗什么意思</span>
+      <div class="seal">花</div>
+      <h1>飞花令</h1>
+      <div class="sub">以 诗 会 友</div>
+      <div class="examples">
+        <div class="example" data-q="以"月"行飞花令"><span class="ico">🌙</span>以"月"行飞花令</div>
+        <div class="example" data-q="接龙"床前明月光""><span class="ico">🐉</span>接龙"床前明月光"</div>
+        <div class="example" data-q="写一句思乡的诗"><span class="ico">🍂</span>写一句思乡的诗</div>
+        <div class="example" data-q="解读"举头望明月，低头思故乡""><span class="ico">📜</span>解读名句</div>
       </div>`;
     chatEl.appendChild(w);
   }
 
   function appendUser(text) {
+    lastUserPrompt = text;
     const row = document.createElement('div');
     row.className = 'row user';
-    row.innerHTML = `<div class="bubble"></div>`;
+    row.innerHTML = `<div class="msg-meta"><span class="avatar">你</span></div><div class="bubble"></div>`;
     row.querySelector('.bubble').textContent = text;
     chatEl.appendChild(row);
     scrollBottom();
     return row;
   }
 
-  // 创建一个 assistant 消息骨架，返回 bubble 元素供流式追加
   function appendAssistant() {
     const row = document.createElement('div');
     row.className = 'row assistant';
-    row.innerHTML = `<div class="bubble"></div>`;
+    row.innerHTML = `<div class="msg-meta"><span class="avatar">花</span>飞花令</div><div class="bubble"></div>`;
     chatEl.appendChild(row);
     scrollBottom();
     return { row, bubble: row.querySelector('.bubble') };
@@ -466,7 +738,7 @@
     let argsShort = '';
     try { argsShort = JSON.stringify(JSON.parse(args)); } catch (e) { argsShort = args; }
     if (argsShort.length > 60) argsShort = argsShort.slice(0, 60) + '…';
-    div.innerHTML = `<span class="icon">🔧</span> 调用工具 <code>${escapeHtml(name)}</code>${argsShort ? ` <code>${escapeHtml(argsShort)}</code>` : ''}`;
+    div.innerHTML = `<span class="ico">⚙</span> 检索诗词 <code>${escapeHtml(name)}</code>${argsShort ? ` <code>${escapeHtml(argsShort)}</code>` : ''}`;
     row.appendChild(div);
     chatEl.appendChild(row);
     scrollBottom();
@@ -475,19 +747,35 @@
   function appendError(msg) {
     const row = document.createElement('div');
     row.className = 'row assistant';
-    row.innerHTML = `<div class="error-msg">⚠️ ${escapeHtml(msg)}</div>`;
+    const div = document.createElement('div');
+    div.className = 'error-msg';
+    const textEl = document.createElement('span');
+    textEl.className = 'error-text';
+    textEl.textContent = '⚠️ ' + msg;
+    div.appendChild(textEl);
+    if (lastUserPrompt) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'retry-btn';
+      btn.title = '自动重发上一条提示';
+      btn.innerHTML = '<span class="retry-icon">↻</span><span class="retry-label">重试</span>';
+      btn.addEventListener('click', () => retryLast(btn));
+      div.appendChild(btn);
+    }
+    row.appendChild(div);
     chatEl.appendChild(row);
     scrollBottom();
+    return { row, div };
   }
 
   function scrollBottom() {
-    chatEl.scrollTop = chatEl.scrollHeight;
+    requestAnimationFrame(() => { chatEl.scrollTop = chatEl.scrollHeight; });
   }
   function escapeHtml(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // ---- SSE 解析 ----
+  // ---- SSE ----
   function parseSSEBlock(block) {
     let event = 'message';
     const dataLines = [];
@@ -501,23 +789,13 @@
     return { event, data };
   }
 
-  // ---- 发送 ----
-  async function send() {
-    const text = inputEl.value.trim();
-    if (!text || busy) return;
-    busy = true;
-    sendBtn.disabled = true;
-    inputEl.value = '';
-    autoResize();
-
-    // 欢迎语 -> 清空
-    if (chatEl.querySelector('.welcome')) chatEl.innerHTML = '';
-
-    appendUser(text);
-    const { bubble } = appendAssistant();
-    let cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    bubble.appendChild(cursor);
+  // ---- 流式对话 ----
+  async function streamChat(text, bubble) {
+    // typing 指示
+    const typing = document.createElement('span');
+    typing.className = 'typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    bubble.appendChild(typing);
 
     try {
       const resp = await fetch('/api/chat', {
@@ -525,13 +803,12 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, session_id: sessionId, model: currentModel })
       });
-      if (!resp.ok) {
-        throw new Error('HTTP ' + resp.status);
-      }
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      let receivedAnyDelta = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -548,19 +825,21 @@
           switch (msg.event) {
             case 'meta':
               sessionId = msg.data.session_id || sessionId;
-              localStorage.setItem('fh_session_id', sessionId);
+              try { localStorage.setItem('fh_session_id', sessionId); } catch (_) {}
               break;
             case 'delta':
-              cursor.remove();
+              if (!receivedAnyDelta) {
+                typing.remove();
+                receivedAnyDelta = true;
+              }
               bubble.appendChild(document.createTextNode(msg.data.content || ''));
-              bubble.appendChild(cursor);
               scrollBottom();
               break;
             case 'tool_call':
-              cursor.remove();
               appendToolCall(msg.data.name, msg.data.arguments);
               break;
             case 'error':
+              typing.remove();
               appendError(msg.data.message || '未知错误');
               break;
             case 'done':
@@ -569,10 +848,27 @@
           }
         }
       }
-      cursor.remove();
+      if (typing.isConnected) typing.remove();
     } catch (e) {
-      cursor.remove();
+      if (typing.isConnected) typing.remove();
       appendError('请求失败：' + e.message + '（请确认服务端已启动、API Key 已配置）');
+    }
+  }
+
+  // ---- 发送 ----
+  async function send() {
+    const text = inputEl.value.trim();
+    if (!text || busy) return;
+    busy = true;
+    sendBtn.disabled = true;
+    inputEl.value = '';
+    autoResize();
+    if (chatEl.querySelector('.welcome')) chatEl.innerHTML = '';
+
+    appendUser(text);
+    const { bubble } = appendAssistant();
+    try {
+      await streamChat(text, bubble);
     } finally {
       busy = false;
       sendBtn.disabled = false;
@@ -580,7 +876,29 @@
     }
   }
 
-  // ---- 事件绑定 ----
+  async function retryLast(btn) {
+    if (busy || !lastUserPrompt) return;
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('spinning');
+    }
+    chatEl.querySelectorAll('.error-msg').forEach(el => {
+      const row = el.parentNode;
+      if (row && row.parentNode) row.remove();
+    });
+    busy = true;
+    sendBtn.disabled = true;
+    const { bubble } = appendAssistant();
+    try {
+      await streamChat(lastUserPrompt, bubble);
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+
+  // ---- 事件 ----
   sendBtn.addEventListener('click', send);
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -589,18 +907,13 @@
     }
   });
   inputEl.addEventListener('input', autoResize);
-
   function autoResize() {
     inputEl.style.height = 'auto';
     inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + 'px';
   }
-
-  modelSelect.addEventListener('change', () => {
-    currentModel = modelSelect.value;
-  });
+  modelSelect.addEventListener('change', () => { currentModel = modelSelect.value; });
 
   newChatBtn.addEventListener('click', async () => {
-    // 服务端重置历史
     if (sessionId) {
       try {
         await fetch('/api/reset', {
@@ -608,22 +921,22 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ session_id: sessionId })
         });
-      } catch (e) { /* 忽略 */ }
+      } catch (e) {}
     }
     sessionId = '';
-    localStorage.removeItem('fh_session_id');
+    try { localStorage.removeItem('fh_session_id'); } catch (_) {}
     renderWelcome();
   });
 
-  // 欢迎区点击示例
+  // 欢迎区示例点击
   chatEl.addEventListener('click', (e) => {
-    if (e.target.tagName === 'SPAN' && chatEl.querySelector('.welcome')) {
-      inputEl.value = e.target.textContent;
+    const ex = e.target.closest('.example');
+    if (ex && ex.dataset.q) {
+      inputEl.value = ex.dataset.q;
       send();
     }
   });
 
-  // 初始化
   loadModels();
   renderWelcome();
 })();

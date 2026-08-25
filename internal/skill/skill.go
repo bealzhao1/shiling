@@ -1,5 +1,5 @@
-// Package skills 解析 SKILL.md 技能文件，供 Agent 注入系统提示。
-package skills
+// Package skill 解析 SKILL.md 技能文件，供 Agent 注入系统提示。
+package skill
 
 import (
 	"fmt"

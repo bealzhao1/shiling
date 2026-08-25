@@ -2,16 +2,20 @@
 // 驱动 function calling 多轮循环，并通过事件回调对外输出（流式文本增量 / 工具调用 / 完成 / 错误）。
 //
 // 网关层（gateway）与命令行模式（CLI）都复用本层的 StreamChat。
+//
+// 依赖关系：agent → llm（模型调用）、tools（工具注册表）、skill（技能提示）。
+// 工具注册表内部依赖 store（诗词数据），由外部注入，实现数据源解耦。
 package agent
 
 import (
 	"fmt"
 	"sync"
 
-	"shiling/internal/config"
-	"shiling/internal/llm"
-	"shiling/internal/skills"
-	"shiling/internal/tools"
+	"github.com/bealzhao1/shiling/internal/config"
+	"github.com/bealzhao1/shiling/internal/llm"
+	"github.com/bealzhao1/shiling/internal/skill"
+	"github.com/bealzhao1/shiling/internal/store"
+	"github.com/bealzhao1/shiling/internal/tools"
 )
 
 // EventType 输出事件类型。
@@ -39,8 +43,9 @@ type Emitter func(Event) error
 // Agent 单个会话的飞花令 Agent 实例。
 type Agent struct {
 	cfg    *config.Config
-	skill  *skills.Skill
+	skill  *skill.Skill
 	client *llm.Client
+	tools  *tools.Registry
 
 	mu           sync.Mutex // 串行化单会话内的并发请求
 	history      []llm.Message
@@ -48,15 +53,16 @@ type Agent struct {
 }
 
 // New 创建 Agent 实例，使用配置中的默认模型。
-func New(cfg *config.Config, skill *skills.Skill) *Agent {
+func New(cfg *config.Config, sk *skill.Skill, st store.Store) *Agent {
 	mc := cfg.Get(cfg.DefaultModel)
 	return &Agent{
 		cfg:          cfg,
-		skill:        skill,
+		skill:        sk,
 		client:       llm.NewClient(mc),
+		tools:        tools.New(st),
 		currentModel: cfg.DefaultModel,
 		history: []llm.Message{
-			{Role: "system", Content: skill.SystemPrompt()},
+			{Role: "system", Content: sk.SystemPrompt()},
 		},
 	}
 }
@@ -112,7 +118,7 @@ func (a *Agent) StreamChat(userInput string, emit Emitter) error {
 
 	// 2~4. 工具调用多轮循环
 	for {
-		msg, err := a.client.ChatStream(a.history, tools.Defs(), 0.8, func(delta string) {
+		msg, err := a.client.ChatStream(a.history, a.tools.Defs(), 0.8, func(delta string) {
 			_ = emit(Event{Type: EventDelta, Content: delta})
 		})
 		if err != nil {
@@ -128,7 +134,7 @@ func (a *Agent) StreamChat(userInput string, emit Emitter) error {
 				if err := emit(Event{Type: EventToolCall, Name: tc.Function.Name, Arguments: tc.Function.Arguments}); err != nil {
 					return err
 				}
-				result := tools.Execute(tc)
+				result := a.tools.Execute(tc)
 				a.history = append(a.history, llm.Message{
 					Role:       "tool",
 					Content:    result,

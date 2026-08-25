@@ -18,9 +18,10 @@ import (
 	"sync"
 	"time"
 
-	"shiling/internal/agent"
-	"shiling/internal/config"
-	"shiling/internal/skills"
+	"github.com/bealzhao1/shiling/internal/agent"
+	"github.com/bealzhao1/shiling/internal/config"
+	"github.com/bealzhao1/shiling/internal/skill"
+	"github.com/bealzhao1/shiling/internal/store"
 )
 
 // session 一个会话：绑定的 Agent 实例 + 最近活跃时间（用于 TTL 清理）。
@@ -32,7 +33,8 @@ type session struct {
 // Server 网关服务。
 type Server struct {
 	cfg   *config.Config
-	skill *skills.Skill
+	skill *skill.Skill
+	store store.Store
 	web   string // 前端静态文件目录
 
 	mu       sync.RWMutex
@@ -42,10 +44,11 @@ type Server struct {
 }
 
 // New 创建网关服务。
-func New(cfg *config.Config, skill *skills.Skill, webDir string) *Server {
+func New(cfg *config.Config, sk *skill.Skill, st store.Store, webDir string) *Server {
 	s := &Server{
 		cfg:        cfg,
-		skill:      skill,
+		skill:      sk,
+		store:      st,
 		web:        webDir,
 		sessions:   make(map[string]*session),
 		sessionTTL: 30 * time.Minute,
@@ -205,7 +208,7 @@ func (s *Server) getOrCreate(sessionID string) (*session, string) {
 		}
 	}
 	id := newSessionID()
-	sess := &session{agent: agent.New(s.cfg, s.skill), lastActive: time.Now()}
+	sess := &session{agent: agent.New(s.cfg, s.skill, s.store), lastActive: time.Now()}
 	s.sessions[id] = sess
 	return sess, id
 }

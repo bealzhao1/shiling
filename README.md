@@ -40,7 +40,7 @@
 
 ```
 shiling/
-├── main.go                    # 入口：Web 网关 / CLI 双模式
+├── cmd/server/main.go         # 入口：Web 网关 / CLI 双模式（薄入口，只做装配与分派）
 ├── config.json                # ★ 模型配置文件：多模型清单 + 默认模型
 ├── Dockerfile                 # 多阶段构建（golang → alpine 非 root）
 ├── .dockerignore              # 构建排除清单
@@ -57,11 +57,14 @@ shiling/
 └── internal/
     ├── gateway/gateway.go     # 网关层：路由 + 会话 + SSE + 静态文件 + /healthz
     ├── agent/agent.go         # Agent 层：编排 + 工具循环 + 流式回调
+    ├── cli/cli.go             # CLI 层：命令行调试模式（复用 agent）
     ├── llm/llm.go             # LLM 客户端：流式/非流式 + function calling
     ├── config/config.go       # 配置加载器（JSON）
-    ├── skills/skills.go       # SKILL.md 解析器
-    ├── poems/poems.go         # 内置诗词库（按令字检索）
-    └── tools/tools.go         # 工具注册表（search_poems）
+    ├── skill/skill.go         # SKILL.md 解析器
+    ├── tools/tools.go         # 工具注册表（search_poems，依赖注入 store）
+    └── store/                 # ★ 存储抽象层（数据源解耦）
+        ├── store.go           #   Store 接口 + Poem 类型
+        └── memory/memory.go   #   内存实现（内置诗词库，按令字检索）
 ```
 
 ## 快速开始
@@ -70,19 +73,19 @@ shiling/
 # 1. 设置默认模型对应的 API Key（默认混元 hy）
 export HY_API_KEY=sk-你的key
 
-# 2. 启动 Web 网关（默认 :8080）
-go run .
+# 2. 启动 Web 网关（默认 :8082）
+go run ./cmd/server
 
 # 3. 浏览器打开
-#    http://localhost:8080
+#    http://localhost:8082
 ```
 
 ```bash
 # 指定监听地址 / 配置文件 / 前端目录
-go run . -addr :9090 -config ./my-config.json -web ./web
+go run ./cmd/server -addr :9090 -config ./my-config.json -web ./web
 
 # 命令行调试模式（不启动 Web）
-go run . -cli
+go run ./cmd/server -cli
 ```
 
 ## 服务端接口
@@ -167,9 +170,10 @@ go run . -cli
 
 ## 扩展指南
 
-- **加诗**：编辑 `internal/poems/poems.go` 的 `all` 切片
+- **加诗**：编辑 `internal/store/memory/memory.go` 的 `all` 切片（后续接入数据库后改为写库）
 - **改行为**：编辑 `skills/shiling/SKILL.md`
 - **加工具**：在 `internal/tools/tools.go` 的 `Defs` 注册 + `Execute` 分发
+- **换存储**：新增实现 `store.Store` 接口的包（如 `sqlite` / `mysql` / `es`），并在 `cmd/server/main.go` 替换注入
 - **加模型**：往 `config.json` 的 `models` 加一条
 - **接入任意 OpenAI 兼容服务**：只要支持 `/chat/completions` + Bearer + `stream` + `tools` 即可直接接入
 

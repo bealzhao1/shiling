@@ -10,7 +10,7 @@ COPY . .
 
 # 静态编译，去掉调试信息并裁剪路径，减小体积
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -trimpath -ldflags="-s -w" -o /out/shiling .
+    go build -trimpath -ldflags="-s -w" -o /out/shiling ./cmd/server
 
 # ===================== 运行阶段 =====================
 FROM alpine:3.20

@@ -1,17 +1,27 @@
-// Package poems 提供内置诗词库，供飞花令 Agent 检索。
-package poems
+// Package memory 提供基于内存的诗词库实现，作为 store.Store 接口的默认/降级后端。
+//
+// 数据当前硬编码在 all 中；后续接入 SQLite / MySQL / Elasticsearch / 向量数据库时，
+// 只需新增实现 store.Store 的包，无需改动上层。
+package memory
 
-import "strings"
+import (
+	"strings"
 
-// Poem 一首诗的数据结构。
-type Poem struct {
-	Text   string // 诗句，如 "床前明月光，疑是地上霜"
-	Author string // 作者
-	Title  string // 诗名
+	"github.com/bealzhao1/shiling/internal/store"
+)
+
+// Store 内存诗词库。
+type Store struct {
+	poems []store.Poem
+}
+
+// New 创建内存诗词库，预置内置数据。
+func New() *Store {
+	return &Store{poems: all}
 }
 
 // all 内置诗词库。每首诗标注了所含的关键字（令字），用于飞花令检索。
-var all = []Poem{
+var all = []store.Poem{
 	// —— 月 ——
 	{Text: "床前明月光，疑是地上霜", Author: "李白", Title: "静夜思"},
 	{Text: "举头望明月，低头思故乡", Author: "李白", Title: "静夜思"},
@@ -121,13 +131,13 @@ var all = []Poem{
 	{Text: "昨夜星辰昨夜风，画楼西畔桂堂东", Author: "李商隐", Title: "无题"},
 }
 
-// Search 按关键字（令字/主题词）检索诗句。匹配诗句文本或标题。
-func Search(keyword string) []Poem {
+// Search 实现 store.Store：按关键字（令字/主题词）检索诗句。匹配诗句文本、标题或作者。
+func (s *Store) Search(keyword string) []store.Poem {
 	if strings.TrimSpace(keyword) == "" {
 		return nil
 	}
-	var out []Poem
-	for _, p := range all {
+	var out []store.Poem
+	for _, p := range s.poems {
 		if strings.Contains(p.Text, keyword) || strings.Contains(p.Title, keyword) || strings.Contains(p.Author, keyword) {
 			out = append(out, p)
 		}
@@ -135,7 +145,12 @@ func Search(keyword string) []Poem {
 	return out
 }
 
-// All 返回全部诗词。
-func All() []Poem {
-	return all
+// All 实现 store.Store：返回全部诗词。
+func (s *Store) All() []store.Poem {
+	return s.poems
+}
+
+// Close 实现 store.Store：内存实现无需释放资源。
+func (s *Store) Close() error {
+	return nil
 }

@@ -43,6 +43,6 @@ description: |
 - 语言温润、有书卷气，但不过度文言。
 
 ## 参考实现
-- 本地诗词库：`internal/poems/poems.go`（内置 60+ 首常用诗）
+- 本地诗词库：`internal/store/memory/memory.go`（内置 60+ 首常用诗）
 - 工具定义：`internal/tools/tools.go`
 - API 客户端：`internal/llm/llm.go`

@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"strings"
 
-	"shiling/internal/config"
+	"github.com/bealzhao1/shiling/internal/config"
 )
 
 // Message 对话消息。
