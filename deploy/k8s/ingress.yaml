@@ -11,8 +11,9 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: shiling.bealzhao.cn
-      http:
+    # 如需绑定域名，取消下一行注释并填入真实域名：
+    # - host: shiling.bealzhao.cn
+    - http:
         paths:
           - path: /
             pathType: Prefix
