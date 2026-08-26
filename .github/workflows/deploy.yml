@@ -119,3 +119,9 @@ jobs:
           kubectl -n shiling describe deployment/shiling
           echo "--- rollout status ---"
           kubectl -n shiling rollout status deployment/shiling --timeout=600s
+
+      # Secret 注入不会触发滚动更新；显式 restart 让 Pod 重新加载 envFrom
+      - name: Restart to pick up Secret env vars
+        run: |
+          kubectl -n shiling rollout restart deployment/shiling
+          kubectl -n shiling rollout status deployment/shiling --timeout=600s
