@@ -1,0 +1,22 @@
+[Unit]
+Description=Shiling Poetry Agent (后端进程)
+Documentation=https://github.com/your/shiling
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 按需调整用户；如需绑定 80/443 请用 root
+User=root
+Group=root
+WorkingDirectory=/opt/shiling
+EnvironmentFile=-/opt/shiling/env.sh
+ExecStart=/opt/shiling/shiling -addr :8082
+Restart=always
+RestartSec=3
+# 安全加固
+NoNewPrivileges=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

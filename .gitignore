@@ -1,0 +1,17 @@
+# 构建产物
+dist/
+
+# 二进制
+shiling
+shiling-linux-amd64
+
+# 日志
+*.log
+
+# 本地环境文件（含 API Key）
+env.sh
+
+# IDE / 系统
+.DS_Store
+.idea/
+.vscode/

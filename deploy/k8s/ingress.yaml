@@ -6,10 +6,14 @@ metadata:
   labels:
     app.kubernetes.io/name: shiling
   annotations:
-    # Traefik 默认支持 SSE 流式转发，无需关闭缓冲
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - bealzhao.cn
+      secretName: demo-tls-secret
   rules:
     # 如需绑定域名，取消下一行注释并填入真实域名：
     # - host: shiling.bealzhao.cn
